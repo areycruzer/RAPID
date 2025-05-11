@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  lit-backend:
+    build: .
+    container_name: lit-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+    environment:
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - RETELL_API_KEY=${RETELL_API_KEY}
+      - HUME_API_KEY=${HUME_API_KEY}
+      - MODEL_PATH=${MODEL_PATH:-models/lit-emergency-triage}
+      - WHISPER_MODEL=${WHISPER_MODEL:-base}
+      - HF_API_TOKEN=${HF_API_TOKEN}
+      # Add any other environment variables here
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    # Alternative for nvidia-docker setups
+    # runtime: nvidia
+    # environment:
+    #   - NVIDIA_VISIBLE_DEVICES=all

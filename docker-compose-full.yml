@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lit-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+      - ./models:/app/models
+      - ./data:/app/data
+    environment:
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - MODEL_PATH=${MODEL_PATH:-models/lit-emergency-triage}
+      - HF_API_TOKEN=${HF_API_TOKEN:-}
+      - HUME_API_KEY=${HUME_API_KEY:-}
+      - RETELL_API_KEY=${RETELL_API_KEY:-}
+      - WHISPER_MODEL=${WHISPER_MODEL:-small}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - lit-network
+    command: uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lit-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NEXT_PUBLIC_WS_URL=ws://backend:8000/ws
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - lit-network
+    command: npm run dev
+
+networks:
+  lit-network:
+    driver: bridge
+
+# Optional GPU configuration
+# Uncomment the following for GPU support
+# 
+# deploy:
+#   resources:
+#     reservations:
+#       devices:
+#         - driver: nvidia
+#           count: 1
+#           capabilities: [gpu]

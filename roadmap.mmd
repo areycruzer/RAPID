@@ -1,0 +1,42 @@
+flowchart TD
+    classDef primary fill:#FF5A5F,stroke:#333,stroke-width:1px,color:white
+    classDef secondary fill:#0070f3,stroke:#333,stroke-width:1px,color:white
+    classDef tertiary fill:#10B981,stroke:#333,stroke-width:1px,color:white
+    classDef quaternary fill:#8B5CF6,stroke:#333,stroke-width:1px,color:white
+
+    A[Emergency Caller] -->|Dials 112| B[Twilio Service]
+    B -->|Voice Stream| C[FastAPI Backend]
+    
+    subgraph Processing["AI Processing Pipeline"]
+        direction TB
+        D[OpenAI Whisper ASR] -->|Raw Transcript| E[Text Cleanup]
+        E -->|Processed Text| F[Fine-tuned LLM Triage]
+        F -->|Classification| G[Emotion Analysis]
+    end
+    
+    C -->|Audio Stream| D
+    G -->|JSON Payload| H[Response Generation]
+    H -->|TTS via Retell| B
+    B -->|Voice Response| A
+    
+    G -->|WebSocket| I[React Dashboard]
+    
+    subgraph Dashboard["Operator Interface"]
+        direction TB
+        J[Live Transcript] 
+        K[Location Map]
+        L[Emotion Indicators]
+        M[Recommended Actions]
+        N[Human Override Controls]
+    end
+    
+    I --> J
+    I --> K
+    I --> L
+    I --> M
+    N -->|Operator Input| H
+    
+    class A,B primary
+    class C,H secondary
+    class D,E,F,G tertiary
+    class I,J,K,L,M,N quaternary

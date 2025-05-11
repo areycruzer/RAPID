@@ -1,0 +1,68 @@
+{
+  "name": "lit-emergency-response",
+  "version": "1.0.0",
+  "description": "Lifeline Inside Telephone - AI-powered emergency response system",
+  "components": {
+    "backend": {
+      "port": 8000,
+      "command": "uvicorn app:app --host 0.0.0.0 --port 8000",
+      "healthcheck": "http://localhost:8000/health",
+      "environment": [
+        "TWILIO_ACCOUNT_SID",
+        "TWILIO_AUTH_TOKEN",
+        "MODEL_PATH",
+        "HF_API_TOKEN",
+        "HUME_API_KEY",
+        "RETELL_API_KEY",
+        "WHISPER_MODEL"
+      ]
+    },
+    "frontend": {
+      "port": 3000,
+      "command": "cd frontend && npm run dev",
+      "healthcheck": "http://localhost:3000",
+      "environment": [
+        "NEXT_PUBLIC_WS_URL"
+      ],
+      "build": "cd frontend && npm run build"
+    }
+  },
+  "deployment": {
+    "local": {
+      "command": "python start.py",
+      "description": "Starts both backend and frontend with a single command"
+    },
+    "docker": {
+      "command": "docker-compose -f docker-compose-full.yml up -d",
+      "description": "Runs the entire stack in Docker containers"
+    },
+    "vercel": {
+      "frontend": {
+        "buildCommand": "cd frontend && npm run build",
+        "outputDirectory": "frontend/.next",
+        "environment": {
+          "NEXT_PUBLIC_WS_URL": "wss://your-backend-url.com/ws"
+        }
+      }
+    }
+  },
+  "webhook": {
+    "setup": "ngrok http 8000",
+    "twilio": {
+      "voice": "/twilio/call",
+      "recording": "/twilio/recording",
+      "response": "/twilio/response"
+    }
+  },
+  "ci": {
+    "github": {
+      "workflow": ".github/workflows/deploy.yml",
+      "secrets": [
+        "TWILIO_ACCOUNT_SID",
+        "TWILIO_AUTH_TOKEN",
+        "HF_API_TOKEN",
+        "VERCEL_TOKEN"
+      ]
+    }
+  }
+}

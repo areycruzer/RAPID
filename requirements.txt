@@ -1,0 +1,32 @@
+# FastAPI and server dependencies
+fastapi>=0.95.0
+uvicorn>=0.21.1
+python-multipart>=0.0.6
+httpx>=0.24.0
+websockets>=11.0.3
+
+# Twilio integration
+twilio>=8.0.0
+
+# ASR
+openai-whisper>=20230314
+ffmpeg-python>=0.2.0
+
+# LLM and ML dependencies
+torch>=2.0.0
+transformers>=4.28.1
+peft>=0.4.0
+accelerate>=0.18.0
+bitsandbytes>=0.38.0
+sentencepiece>=0.1.99
+
+# Data processing
+pandas>=2.0.0
+datasets>=2.12.0
+tqdm>=4.65.0
+
+# Optional: Hindi translation
+# sacremoses>=0.0.53
+
+# Docker and environment
+python-dotenv>=1.0.0
