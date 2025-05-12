@@ -1,7 +1,7 @@
 """
 Fine-tuning Script for LIT (Lifeline Inside Telephone)
 This script fine-tunes the Mistral-7B-Instruct-v0.1 model using PEFT (LoRA)
-on the processed emergency call data.
+on the processed emergency calls data.
 """
 
 import sys
